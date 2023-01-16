@@ -1,5 +1,39 @@
+// fonction d'intégration des données canapés dans l'index
+  function addElement () {
+    // crée un nouvel élément a
+    var newA = document.createElement("a");
+    // et inscrit une balise article en son sein
+    var newArticle = document.createElement('article');
+  
+    var newImage = document.createElement('img');
+  
+    var newH3 = document.createElement('h3');
 
+    var newP = document.createElement('p');
 
+    var newContent_1 = document.createTextNode('name');
+    // ajoute le nœud texte au nouveau div créé
+    newH3.appendChild(newContent_1);
+
+    var newContent_2 = document.createTextNode('description');
+  // ajoute le nœud texte au nouveau div créé
+    newP.appendChild(newContent_2);
+    
+
+    // ajoute les nouvels éléments créés et leurs contenus dans le DOM
+    var currentA = document.getElementsByTagName("a[href='imageUrl[i]'");
+    document.section.insertBefore(newA, currentA);
+    var currentArticle = document.getElementsByTagName();
+    document.a.insertBefore(newArticle, currentArticle);
+    var currentImg = document.setAttribut('src','.../' + image[i] + '.jpg');
+    var currentImg = document.setAttribut('altTxt[i]',description[i]);
+    document.article.insertBefore(newImg, currentImg);
+    var currentH3 = document.getElementByClassName('productName');
+    document.article.insertBefore(newH3, currentH3);
+    var currentP = document.getElementByClassName('productDescription');
+    document.article.insertBefore(newP, currentP);
+  
+  }
 // fonction de requête des canapés //
 fetch("http://localhost:3000/api/products")
   .then(function(réponse) {
@@ -8,29 +42,23 @@ fetch("http://localhost:3000/api/products")
     }
   })
   .then(function(valeurs) {
-    let canapés = [valeurs]
+      
+    for (let i=0; i < canapes.lenght; i++) {
+      {
+        colors[i] = document.getElementsByName('colors');
+        id[i] = document.getElementByName('_id');
+        Name[i]=document.getElementByName('name');
+        price[i]=document.getElementByName('price');
+        imageUrl[i]=document.getElementByName('imageUrl');
+        description[i]=document.getElementByName('description');
+        altTxt[i]=document.getElementByName('altText');
+  
+        document.section.onload = addElement;
+      }
+    }
+  
   })
+  
   .catch(function(err) {
     // Une erreur est survenue
   });
-  for (let canapé of canapés) {
-    let elt=[canapé[i]]
-    elt = document.getElementById('item');
-    elt.innerHTML = <a href="./product.html?id=42">
-                      <article>
-                        <img src=".../product01.jpg" alt="Lorem ipsum dolor sit amet, Kanap name1"/>
-                        <h3 class="productName">Kanap name1</h3>
-                        <p class="productDescription">Dis enim malesuada risus sapien gravida nulla nisl arcu. Dis enim malesuada risus sapien gravida nulla nisl arcu.</p>
-                      </article>
-                    </a>;
-  }
-
-  var str = "http://localhost:3000/api/products";
-  var url = new URL(str);
-  var search_params = new URLSearchParams(url.search); 
-  if(search_params.has('name')) {
-    var name = search_params.get('name');
-    console.log(name)
-  }
-
-
