@@ -1,64 +1,55 @@
+// fonction de requête des canapés //
+
+
 // fonction d'intégration des données canapés dans l'index
-  function addElement () {
+  function afficherCanape (canape) {
     // crée un nouvel élément a
-    var newA = document.createElement("a");
+    var lienCanape = document.createElement('a');
+    let baliseSection = document.getElementById("items");
+    baliseSection.appendChild(lienCanape);
+    
     // et inscrit une balise article en son sein
-    var newArticle = document.createElement('article');
+    var donneesCanape = document.createElement('article');
+    lienCanape.appendChild(donneesCanape);
   
-    var newImage = document.createElement('img');
-  
-    var newH3 = document.createElement('h3');
+    // et inscrit des balise à l'intérieur
+    var imageCanape = document.createElement('img');
+    donneesCanape.appendChild(imageCanape);
 
-    var newP = document.createElement('p');
-
-    var newContent_1 = document.createTextNode('name');
+    var nomCanape = document.createElement('h3');
+    donneesCanape.appendChild(nomCanape);
+    var contenu_1 = document.createTextNode(canape.name);
     // ajoute le nœud texte au nouveau div créé
-    newH3.appendChild(newContent_1);
+    nomCanape.appendChild(contenu_1);
 
-    var newContent_2 = document.createTextNode('description');
+    var descriptionCanape = document.createElement('p');
+    donneesCanape.appendChild(descriptionCanape);
+    var contenu_2 = document.createTextNode(canape.description);
   // ajoute le nœud texte au nouveau div créé
-    newP.appendChild(newContent_2);
+    descriptionCanape.appendChild(contenu_2);
     
 
     // ajoute les nouvels éléments créés et leurs contenus dans le DOM
-    var currentA = document.getElementsByTagName("a[href='imageUrl[i]'");
-    document.section.insertBefore(newA, currentA);
-    var currentArticle = document.getElementsByTagName();
-    document.a.insertBefore(newArticle, currentArticle);
-    var currentImg = document.setAttribut('src','.../' + image[i] + '.jpg');
-    var currentImg = document.setAttribut('altTxt[i]',description[i]);
-    document.article.insertBefore(newImg, currentImg);
-    var currentH3 = document.getElementByClassName('productName');
-    document.article.insertBefore(newH3, currentH3);
-    var currentP = document.getElementByClassName('productDescription');
-    document.article.insertBefore(newP, currentP);
-  
+    lienCanape = document.setAttribut('href', './product.html?'.concat(canape.id));
+    imageCanape = document.setAttribut('src', canape.imageUrl);
+    imageCanape = document.setAttribut('altTxt', canape.description);
+    
   }
-// fonction de requête des canapés //
-fetch("http://localhost:3000/api/products")
-  .then(function(réponse) {
-    if (réponse.ok) {
-      return réponse.json();
-    }
-  })
-  .then(function(valeurs) {
-      
-    for (let i=0; i < canapes.lenght; i++) {
-      {
-        colors[i] = document.getElementsByName('colors');
-        id[i] = document.getElementByName('_id');
-        Name[i]=document.getElementByName('name');
-        price[i]=document.getElementByName('price');
-        imageUrl[i]=document.getElementByName('imageUrl');
-        description[i]=document.getElementByName('description');
-        altTxt[i]=document.getElementByName('altText');
-  
-        document.section.onload = addElement;
+  function recuperationCanape() {
+    fetch("http://localhost:3000/api/products")
+    .then(function(reponse) {
+      if (reponse.ok) {
+        return reponse.json();
       }
-    }
-  
-  })
-  
-  .catch(function(err) {
-    // Une erreur est survenue
-  });
+    })
+    .then(function(valeurs) {
+      for (let valeur of valeurs) {
+        afficherCanape(valeur);
+      }
+    })
+    .catch(function(err) {
+      // Une erreur est survenue
+    });
+  }
+
+recuperationCanape()
