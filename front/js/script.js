@@ -4,25 +4,25 @@
 // fonction d'intégration des données canapés dans l'index
   function afficherCanape (canape) {
     // crée un nouvel élément a
-    var lienCanape = document.createElement('a');
+    var lienCanape = document.createElement("a");
     let baliseSection = document.getElementById("items");
     baliseSection.appendChild(lienCanape);
     
     // et inscrit une balise article en son sein
-    var donneesCanape = document.createElement('article');
+    var donneesCanape = document.createElement("article");
     lienCanape.appendChild(donneesCanape);
   
     // et inscrit des balise à l'intérieur
-    var imageCanape = document.createElement('img');
+    var imageCanape = document.createElement("img");
     donneesCanape.appendChild(imageCanape);
 
-    var nomCanape = document.createElement('h3');
+    var nomCanape = document.createElement("h3");
     donneesCanape.appendChild(nomCanape);
     var contenu_1 = document.createTextNode(canape.name);
     // ajoute le nœud texte au nouveau div créé
     nomCanape.appendChild(contenu_1);
 
-    var descriptionCanape = document.createElement('p');
+    var descriptionCanape = document.createElement("p");
     donneesCanape.appendChild(descriptionCanape);
     var contenu_2 = document.createTextNode(canape.description);
   // ajoute le nœud texte au nouveau div créé
@@ -30,9 +30,9 @@
     
 
     // ajoute les nouvels éléments créés et leurs contenus dans le DOM
-    lienCanape = document.setAttribut('href', './product.html?'.concat(canape.id));
-    imageCanape = document.setAttribut('src', canape.imageUrl);
-    imageCanape = document.setAttribut('altTxt', canape.description);
+    lienCanape = document.setAttribute("href", `./product.html?${canape._id} €`);
+    imageCanape = document.setAttribute("src", canape.imageUrl);
+    imageCanape = document.setAttribute("altTxt", canape.altTxt);
     
   }
   function recuperationCanape() {
