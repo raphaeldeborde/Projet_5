@@ -7,7 +7,9 @@
     var lienCanape = document.createElement("a");
     let baliseSection = document.getElementById("items");
     baliseSection.appendChild(lienCanape);
-    
+    lienCanape.href = `./product.html?${canape._id} €`;
+  
+
     // et inscrit une balise article en son sein
     var donneesCanape = document.createElement("article");
     lienCanape.appendChild(donneesCanape);
@@ -15,6 +17,9 @@
     // et inscrit des balise à l'intérieur
     var imageCanape = document.createElement("img");
     donneesCanape.appendChild(imageCanape);
+    const imageElement = document.createElement("img");
+    imageCanape.src = canape.imageUrl;
+    imageCanape.alt = canape.altTxt;
 
     var nomCanape = document.createElement("h3");
     donneesCanape.appendChild(nomCanape);
@@ -28,13 +33,10 @@
   // ajoute le nœud texte au nouveau div créé
     descriptionCanape.appendChild(contenu_2);
     
-
-    // ajoute les nouvels éléments créés et leurs contenus dans le DOM
-    lienCanape = document.setAttribute("href", `./product.html?${canape._id} €`);
-    imageCanape = document.setAttribute("src", canape.imageUrl);
-    imageCanape = document.setAttribute("altTxt", canape.altTxt);
     
+
   }
+
   function recuperationCanape() {
     fetch("http://localhost:3000/api/products")
     .then(function(reponse) {
