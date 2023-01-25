@@ -1,52 +1,49 @@
-var str = window.location.search
+var str = window.location.href;
 
-function recupererId (str) {
-  
-  var url = new URL(str);
-  var idCanape = url.searchParams.get("name");
-  return idCanape;
-}
-
-function insererLesDonnees(canape) {
+function afficherProduit (canape) {
 
 var imageCanape = document.createElement("img");
-let baliseDivItemImg = document.getElementByClass("item_img");
+let baliseDivItemImg = document.getElementByClass("item__img");
 baliseDivItemImg.appendChild(imageCanape);
 imageCanape.src = canape.imageUrl;
 imageCanape.alt = canape.altTxt;
 
-var nomCanape = document.getElementById("title");
-var contenu_1 = document.createTextNode(canape.name);
-nomCanape.appendChild(contenu_1);
+var nomCanape = document.getElementById(title);
+var contenuTitre = document.createTextNode(canape.name);
+nomCanape.appendChild(contenuTitre);
 
 var prixCanape = document.getElementById("price");
-var contenu_2 = document.createTextNode(canape.price);
-prixCanape.appendChild(contenu_2);
+var contenuPrix = document.createTextNode(canape.price);
+prixCanape.appendChild(contenuPrix);
 
 var descriptionCanape = document.getElementById("description");
-var contenu_3 = document.createTextNode(canape.description);
-descriptionCanape.appendChild(contenu_3);
+var contenuDescription = document.createTextNode(canape.description);
+descriptionCanape.appendChild(contenuDescription);
 }
 
-function DonneesDesId() {
-fetch("http://localhost:3000/api/products")
-.then(function(reponse) {
-  if (reponse.ok) {
-    return reponse.json();
+function recupererProduit(str) {
+
+  var url = new URL(str);
+  var idCanape = url.searchParams.get("name");
+  let newIdCanape = idCanape.replace(/%20€/g, '');
+
+
+  fetch(`http://localhost:3000/api/products/${newIdCanape}`)
+    .then(function(reponse) {
+      if (reponse.ok) {
+        return reponse.json();
+      }
+    })
+    .then(function(valeur) {
+      
+      afficherProduit(valeur);
+
+      }
+    )
+    .catch(function(err) {
+      // Une erreur est survenue
+    });
   }
-})
-.then(function(canapes) {
-  
-  for (let canape in canapes) {
-    if (recupererId(str).json == canape._id) {
-      insererLesDonnees(canape)
-    }
- }  
-})
-.catch(function(err) {
-  // Une erreur est survenue
-});  
-}
-        
-DonneesDesId()
+ 
+recupererProduit(str);
 
