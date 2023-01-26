@@ -9,10 +9,11 @@ console.log(idCanape)
 function afficherProduit(canape) {
 
 var imageCanape = document.createElement("img");
-console.log(imageCanape)
+console.log(imageCanape);
 
-let div = document.getElementByClass("item__img");
-div.appendChildimageCanape
+const div = document.querySelector("article .item__img");
+console.log(div)
+div.appendChild(imageCanape);
 
 imageCanape.src = canape.imageUrl;
 console.log(imageCanape.src)
