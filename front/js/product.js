@@ -1,9 +1,13 @@
+let name, price, imageUrl, description, colors, altTxt;
+
 //récupérer l'url du site pour obtenir l'id du produit à afficher ensuite
-const str = document.location.href;
-const url = new URL(str);
+const  addressePage= document.location.href;
+const url = new URL(addressePage);
 
 const idCanape = url.searchParams.get('id');
-console.log(idCanape)
+
+const selectionCouleur = document.getElementById("colors")
+const boutonPanier = document.getElementById("addToCart")
 
 //fonction pour afficher le Produit dans le html
 function afficherProduit(canape) {
@@ -28,17 +32,17 @@ prixCanape.innerText = canape.price;
 var descriptionCanape = document.getElementById("description");
 descriptionCanape.innerText = canape.description;
 
-var colors = canape.colors;
-var select = document.getElementById("colors")
-for (const color of colors) {
-  const newOption = document.createElement("option");
-  newOption.setAttribute("value", color);
-  newOption.innerText = color;
-  select.appendChild(newOption);
+var couleurs = canape.colors;
+
+for (const couleur of couleurs) {
+  const optionCouleur = document.createElement("option");
+  optionCouleur.setAttribute("value", couleur);
+  optionCouleur.innerText = couleur;
+  selectionCouleur.appendChild(optionCouleur);
   }
 }
 // afficher le produit grâce à l'api qui renvoit les données du produit suivant l'id dans l'url
-function recupererProduit(str) {
+function recupererProduit(addressePage) {
 
   fetch('http://localhost:3000/api/products/'+idCanape)
     .then(function(reponse) {
@@ -52,10 +56,94 @@ function recupererProduit(str) {
 
       }
     )
-    .catch(function(err) {
+    .catch(function(erreur) {
       // Une erreur est survenue
     });
   }
- 
-recupererProduit(str);
 
+recupererProduit(addressePage);
+
+boutonPanier.addEventListener('click',() => {
+  const couleurChoisie = selectionCouleur.value;
+  const inputQuantite = document.getElementById("quantity");
+  const quantite = inputQuantite.value;
+  if (couleurChoisie == "" && (quantite < 1 || quantite > 100)) {
+    appliquerUnStyle(selectionCouleur, "red",2, inputQuantite, "red", 2);
+    alert("Merci de choisir une couleur et un nombre de canapé (entre 1 et 100)");
+  }
+else if (couleurChoisie == "") {
+  appliquerUnStyle(selectionCouleur, "red", 2, inputQuantite, "black", 1);
+  alert("Merci de choisir une couleur pour votre canapé");
+  }
+else if (quantite < 1 || quantite > 100) {
+  if (quantite > 100) {
+    alert("Merci de choisir un nombre de canape inférieur à 100");
+  }
+  else {
+    alert("Merci de choisir un nombre de canapé supérieur à 0");
+  }
+  appliquerUnStyle(selectionCouleur, "black", 1, inputQuantite, "red", 2);
+}
+else  {
+  appliquerUnStyle(selectionCouleur, "black", 1, inputQuantite, "black", 1);
+  
+  const idCouleur = couleurChoisie + idCanape;
+  const produitCanape = {
+    idCouleurProduit:idCouleur,
+    idProduit:idCanape,
+    nomProduit:name,
+    couleurProduit:couleurChoisie,
+    quantiteProduit:quantite,
+    prix:price,
+    imageProduit:imageUrl,
+    descriptionProduit:altTxt,
+  }
+  // Récupération des pièces éventuellement stockées dans le localStorage
+  let canapeLocalStorage = JSON.parse(localStorage.getItem("produitCanapes"));
+  if (canapeLocalStorage) {
+    const index = canapeLocalStorage.findIndex(element => element.idCouleur == idCouleurProduit) 
+  
+    if (index=!-1) {
+     const nouvelleQuantite = Number(quantite) + Number(canapeLocalStorage[index].quantiteProduit)
+     const NouveauProduit = {
+      idCouleurProduit:idCouleur,
+      idProduit:idCanape,
+      nomProduit:nomCanape,
+      couleurProduit:couleurChoisie,
+      quantiteProduit:nouvelleQuantite,
+      prix:price,
+      imageProduit:imageUrl,
+      descriptionProduit:altTxt,
+     }
+      canapeLocalStorage.splice("produitCanape",NouveauProduit);
+    }
+  else {
+    canapeLocalStorage.push(produitCanape);
+  }
+}
+else {
+  canapeLocalStorage=[];
+  canapeLocalStorage.push(produitCanape);
+}
+localStorage.setItem("produits",JSON.stringify(canapeLocalStorage));
+alert("Votre produit a été ajouté au panier");
+}
+})
+
+function appliquerUnStyle(element1, color1, size1, element2, color2, size2) {
+    element1.style.borderColor = color1;
+    element1.style.borderWidth = `${size1}px`;
+    element2.style.borderColor = color2;
+    element2.style.borderWidth = `${size2}px`;
+}
+
+function erreur() {
+  const section = document.querySelector(".item");
+  const article = document.querySelector("article");
+  section.removeChild(article);
+  const newPMessage = document.createElement("p");
+  newPMessage.innerHTML = "Oups !<br>Il semble y avoir une erreur...";
+  newPMessage.style.textAlign = "center";
+  newPMessage.style.color = "black";
+  section.appendChild(newPMessage);
+}
