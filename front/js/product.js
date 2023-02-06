@@ -125,16 +125,16 @@ function insererAuPanier(canapes) {
     imageProduit:imageUrl,
     descriptionProduit:description,
     alt:altTxt,
-  }
+  };
   
-  if (canapes===null) {
+  if (canapes==null) {
     canapes=[];
     canapes.push(produitCanape);
     window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
     alert("Le panier est ouvert");
   }
   else {
-    const indice = canapes.find(can => can.canapePrecis === produitCanape.canapePrecis);
+    const indice = canapes.findIndex(can => can.canapePrecis == produitCanape.canapePrecis);
     if ((indice !== -1))  {
       let nouvelleQuantite = Number(canapes[indice].quantiteProduit) + Number(quantite);
       
