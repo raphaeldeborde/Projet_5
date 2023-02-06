@@ -1,37 +1,32 @@
-let name, price, imageUrl, description, colors, altTxt;
-
-const idCanape = url.searchParams.get('id');
-const selectionCouleur = document.getElementById("colors")
-const boutonPanier = document.getElementById("addToCart")
-
 //récupéreration de l'url du site pour obtenir l'id du produit
 const  addressePage= document.location.href;
 const url = new URL(addressePage);
+const idCanape = url.searchParams.get('id');
 
 //fonction pour afficher le Produit dans le html
 function afficherProduit(canape) {
 
   // récupérer l'image du produit et la placé dans le DOM sous le bon parent
-var imageCanape = document.createElement("img");
+let imageCanape = document.createElement("img");
 const div = document.querySelector("article .item__img");
 div.appendChild(imageCanape);
 imageCanape.src = canape.imageUrl;
 imageCanape.alt = canape.altTxt;
 
 //récupérer le nom et le placé dans la balise ayant l'id title
-var nomCanape = document.getElementById("title");
+let nomCanape = document.getElementById("title");
 nomCanape.innerText = canape.name;
 
 //récupérer le prix et l'insérer dans la balise ayant l'id prix
-var prixCanape = document.getElementById("price");
+let prixCanape = document.getElementById("price");
 prixCanape.innerText = canape.price;
 
 //récupérer la description du canapé et l'introduire dans la balise dont l'id est description
-var descriptionCanape = document.getElementById("description");
+let descriptionCanape = document.getElementById("description");
 descriptionCanape.innerText = canape.description;
 
 // récupérer les couleurs et les insérer séparément
-var couleurs = canape.colors;
+let couleurs = canape.colors;
 
 for (const couleur of couleurs) {
   const optionCouleur = document.createElement("option");
@@ -50,7 +45,6 @@ function recupererProduit(addressePage) {
       }
     })
     .then(function(valeur) {
-      console.log(valeur)
       afficherProduit(valeur);
 
       }
@@ -73,10 +67,18 @@ function recupererProduit(addressePage) {
 
 recupererProduit(addressePage);
 
+
+const boutonPanier = document.getElementById("addToCart");
+const selectionCouleur = document.getElementById("colors")
+
 boutonPanier.addEventListener('click',() => {
-  const couleurChoisie = selectionCouleur.value;
-  const inputQuantite = document.getElementById("quantity");
-  const quantite = inputQuantite.value;
+
+  let couleurChoisie = selectionCouleur.value;
+  let inputQuantite = document.getElementById("quantity");
+  let quantite = inputQuantite.value;
+  
+  
+
   if (couleurChoisie == "" && (quantite < 1 || quantite > 100)) {
     appliquerUnStyle(selectionCouleur, "red",2, inputQuantite, "red", 2);
     alert("Merci de choisir une couleur et un nombre de canapé (entre 1 et 100)");
@@ -97,55 +99,65 @@ else if (quantite < 1 || quantite > 100) {
 else  {
   appliquerUnStyle(selectionCouleur, "black", 1, inputQuantite, "black", 1);
   
-  const idCouleur = couleurChoisie + idCanape;
-  const produitCanape = {
-    idCouleurProduit:idCouleur,
+   
+  // Récupération des données canapés dans le localStorage
+  let canapes = JSON.parse(window.localStorage.getItem("produitCanapes"));
+  insererAuPanier(canapes)
+}
+})
+
+function insererAuPanier(canapes) {
+
+  let inputQuantite = document.getElementById("quantity");
+  let quantite = inputQuantite.value;
+  let couleurChoisie = selectionCouleur.value;
+  let name = document.querySelector("#title");
+  let imageUrl = document.querySelector("article .item__img img").src;
+  let description = document.querySelector("#description");
+  let altTxt = document.querySelector("article .item__img img").alt
+  let unCanape = idCanape + couleurChoisie;
+  let produitCanape = {
+    canapePrecis:unCanape,
     idProduit:idCanape,
     nomProduit:name,
     couleurProduit:couleurChoisie,
     quantiteProduit:quantite,
-    prix:price,
     imageProduit:imageUrl,
-    descriptionProduit:altTxt,
+    descriptionProduit:description,
+    alt:altTxt,
   }
-  // Récupération des données canapés dans le localStorage
-  let canapeLocalStorage = JSON.parse(localStorage.getItem("produitCanapes"));
   
-  if (canapeLocalStorage) {
-    //Trouver la place du canapé à la couleur choisie
-    const index = canapeLocalStorage.findIndex(element => element.idCouleur == idCouleurProduit) 
-    //la quantité est changé si le canapé à la couleur choisie est déjà dans le localStorage
-    if (index=!-1) {
-     const nouvelleQuantite = Number(quantite) + Number(canapeLocalStorage[index].quantiteProduit)
-     const NouveauProduit = {
-      idCouleurProduit:idCouleur,
-      idProduit:idCanape,
-      nomProduit:nomCanape,
-      couleurProduit:couleurChoisie,
-      quantiteProduit:nouvelleQuantite,
-      prix:price,
-      imageProduit:imageUrl,
-      descriptionProduit:altTxt,
-     }
-      canapeLocalStorage.splice("produitCanape",NouveauProduit);
-    }
-  //sinon le canapé est ajouté au tableau
+  if (canapes===null) {
+    canapes=[];
+    canapes.push(produitCanape);
+    window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
+    alert("Le panier est ouvert");
+  }
   else {
-    canapeLocalStorage.push(produitCanape);
+    const indice = canapes.find(can => can.canapePrecis === produitCanape.canapePrecis);
+    if ((indice !== -1))  {
+      let nouvelleQuantite = Number(canapes[indice].quantiteProduit) + Number(quantite);
+      
+      let memeProduit={
+        idProduit:idCanape,
+        nomProduit:name,
+        couleurProduit:couleurChoisie,
+        quantiteProduit:nouvelleQuantite,
+        imageProduit:imageUrl,
+        descriptionProduit:description,
+        alt:altTxt,
+      }
+      canapes.splice(indice, 1,memeProduit);
+      window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
+      alert("Le nombre de canapé souhaité a été augmenté");
+    }
+    else {
+      canapes.push(produitCanape);
+      window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
+      alert("Votre produit a été rajouté au panier");
+    }
   }
 }
-
-else {
-  canapeLocalStorage=[];
-  canapeLocalStorage.push(produitCanape);
-}
-//ajouter le tableau des canapés choisies au localStorage
-
-localStorage.setItem("produits",JSON.stringify(canapeLocalStorage));
-alert("Votre produit a été ajouté au panier");
-}
-})
-
 /**
 * La fonction appliquerUnStyle donne un style aux boutons couleurs et quantité
 * @params {Object} element1
