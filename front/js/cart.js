@@ -110,7 +110,9 @@ let boutonsSupprimer = [];
           nombreProduit.setAttribute("min", "1");
           nombreProduit.setAttribute("max","100");
           nombreProduit.setAttribute("value",`${quantite}`);
-    
+
+          modifierCanape(nombreProduit);
+
           //insertion de la balise de suppression
           let divDelete = document.createElement("div");
           parametre.appendChild(divDelete);
@@ -176,21 +178,13 @@ function calculTotalPrix() {
 }
 function supprimerCanape(boutonSupprimer) {
     boutonSupprimer.addEventListener("click",() => {
-      
       let articleSupprimer = boutonSupprimer.closest("article");
-      console.log(articleSupprimer)
       let idSupprimer = articleSupprimer.dataset.id;
-      console.log(idSupprimer);
       let couleurSupprimer = articleSupprimer.dataset.color;
-      console.log(couleurSupprimer)
       const indice3 = canapes.findIndex((element) => element.idProduit === idSupprimer && element.couleurProduit === couleurSupprimer);
-      console.log(indice3)
       canapes.splice(indice3, 1);
-      console.log(canapes)
       window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
       
-      
-
       alert("ce produit est supprimé");
 
       if (articleSupprimer.parentNode) {
@@ -204,4 +198,37 @@ function supprimerCanape(boutonSupprimer) {
         calculTotalPrix();
       }
     })
+  }
+  function modifierCanape(nombreProduit) {
+    nombreProduit.addEventListener("change",()=> {
+      let articleModifier = nombreProduit.closest("article");
+      console.log(articleModifier)
+      let idModifier = articleModifier.dataset.id;
+      console.log(idModifier)
+      let couleurModifier = articleModifier.dataset.color;
+      console.log(couleurModifier)
+      const indice4 = canapes.findIndex(element =>((element.idProduit === idModifier) && (element.couleurProduit === couleurModifier)));
+      console.log(indice4)
+      let nouvelleQuantite= nombreProduit.value;
+      console.log(nouvelleQuantite)
+      let imageUrl = canapes[indice4].imageProduit;
+      let nom = canapes[indice4].nomProduit;
+      let alt = canapes[indice4].altProduit;
+      let description = canapes[indice4].descriptionProduit;
+      memeProduit = {
+        idProduit:idModifier,
+        couleurProduit:couleurModifier,
+        quantiteProduit:nouvelleQuantite,
+        imageProduit:imageUrl,
+        nomProduit:nom,
+        descriptionProduit:description,
+        altProduit:alt,
+      }
+      console.log(memeProduit)
+      canapes.splice([indice4], 1, memeProduit);
+      console.log(canapes)
+      window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
+      alert("La quantité de ce type de Canapé a changé");
+    }
+    )
   }
