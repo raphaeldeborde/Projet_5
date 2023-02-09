@@ -229,6 +229,8 @@ function supprimerCanape(boutonSupprimer) {
       console.log(canapes)
       window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
       alert("La quantité de ce type de Canapé a changé");
+      calculTotalQuantite();
+      calculTotalPrix();
     }
     )
   }
