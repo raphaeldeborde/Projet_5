@@ -10,7 +10,7 @@ let parentArticle = document.getElementById("cart__items")
 //Déclaration des variables pour commander
 const boutonCommander = document.getElementById("order");
 
-
+let boutonsSupprimer = [];
 //Balise constamment en jeu
  
   if (canapes == null || canapes.length == 0) {
@@ -117,10 +117,12 @@ const boutonCommander = document.getElementById("order");
           divDelete.classList.add("cart__item__content__settings__delete");
     
           //insertion de l'indication de suppression
-          let divItemDelete = document.createElement("p");
-          divDelete.appendChild(divItemDelete);
+          let boutonSupprimer = document.createElement("p");
+          divDelete.appendChild(boutonSupprimer);
           let contenu_7 = document.createTextNode("Supprimer");
-          divItemDelete.appendChild(contenu_7);
+          boutonSupprimer.appendChild(contenu_7);
+
+          supprimerCanape(boutonSupprimer);
           }
         }
       
@@ -136,68 +138,10 @@ const boutonCommander = document.getElementById("order");
     parentArticle.appendChild(titre);
     titre.innerText = panier;
   }
-function modifierPanier() {
-  let nombreProduit = document.querySelectorAll(".itemQuantity");
-  nombreProduit.forEach((nombreProduit)=>{
   
-  nombreProduit.addEventListener("change", (event) => {
-    event.preventDefault();
-    let choixQuantite = Number(nombreProduit.value);
-
-    let monArticle = nombreProduit.closest("article");
-    let monArticleAuLocal = canapes.find(element => element.idProduct == monArticle.dataset.id && element.couleurProduit == monArticle.dataset.color);
-
-    if (choixQuantite > 0 && choixQuantite <= 100 && Number.isInteger(choixQuantite)){
-      let parseChoixQuantite = parseInt(choixQuantite);
-      monArticleAuLocal.quantite = parseChoixQuantite;
-      localStorage.setItem("produitCanapes",JSON.stringify(canapes));
-      recalculerTotalQuantite();
-      recalculerTotalPrix();
-      messageErreurQuantite = false;
-    }
-    else {
-      item.value = monArticleAuLocal.quantite;
-      messageErreurQuantite = true;
-    }
-    if(messageErreurQuantite) {
-      alert("La quantité d'un article (même référence et même couleur) doit être comprise entre 1 et 100 et être un nombre entier. Merci de rectifier la quantite choisie.");
-    }
-    }
-  )
-}
-)
-}
-function supprimer() {
-  let boutonSupprimer = document.querySelectorAll(".deleteItem");
-  boutonSupprimer.forEach((boutonSupprimer)=>{
-    boutonSupprimer.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      let monArticle = boutonSupprimer.closest("article");
-      canapes = canapes.filter(element => (element.idProduit !== monArticle.dataset.id || element.couleurProduit !== monArticle.dataset.color));
-      
-      localStorage.setItem("produitCanapes",JSON.stringify(canapes));
-
-      alert("Ce produit va être supprimé du panier.");
-
-      if (monArticle.parentNode) {
-        monArticle.parentNode.removeChild(monArticle);
-      }
-      if(canapes == null || canapes.length == 0) {
-        messagePanierVide();
-      }
-      else {
-        recalculerTotalQuantite();
-        recalculerTotalPrix();
-      }
-     } )
-    }
-  )}
-  
-  supprimer();
-  modifierPanier();
 calculTotalQuantite();
 calculTotalPrix();
+supprimerCanape();
 function calculTotalQuantite() {
   let totalQuantite = 0;
   for (let i=0; i<canapes.length;i++) {
@@ -211,7 +155,6 @@ function calculTotalPrix() {
   fetch('http://localhost:3000/api/products/')
     .then(function(reponse) {
       if (reponse.ok) {
-        console.log(reponse)
         return reponse.json();
       }
     })
@@ -219,35 +162,46 @@ function calculTotalPrix() {
       
       for (let i=0; i<canapes.length; i++) {
         let quantiteCanape = canapes[i].quantiteProduit;
-        console.log(quantiteCanape)
         let id = canapes[i].idProduit;
-        console.log(id)
         const indice2 = data.findIndex((element) => element._id == id);
-        console.log(indice2)
         let LePrixCanape = data[indice2].price;
-        console.log(LePrixCanape)
         let prixCanape = quantiteCanape*LePrixCanape;
-        console.log(prixCanape)
         totalPrix += prixCanape;
-        console.log(totalPrix)
   }
   document.getElementById("totalPrice").innerText = totalPrix;
 })
 .catch(function(erreur) {
   // Une erreur est survenue
-});
-  
+});  
 }
-function recalculerTotalQuantite() {
-  let nombreTotalProduit = 0;
-  nombreProduit.forEach((nombreProduit)=>{
-  
-  nombreTotalProduit = nombreProduit + nombreTotalProduit;
-  document.getElementById("totalQuantity").innerText=nombreTotalProduit;
-    }
-  )
-}
+function supprimerCanape(boutonSupprimer) {
+    boutonSupprimer.addEventListener("click",() => {
+      
+      let articleSupprimer = boutonSupprimer.closest("article");
+      console.log(articleSupprimer)
+      let idSupprimer = articleSupprimer.dataset.id;
+      console.log(idSupprimer);
+      let couleurSupprimer = articleSupprimer.dataset.color;
+      console.log(couleurSupprimer)
+      const indice3 = canapes.findIndex((element) => element.idProduit === idSupprimer && element.couleurProduit === couleurSupprimer);
+      console.log(indice3)
+      canapes.splice(indice3, 1);
+      console.log(canapes)
+      window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
+      
+      
 
-function recalculerTotalPrix() {
+      alert("ce produit est supprimé");
 
-}
+      if (articleSupprimer.parentNode) {
+        articleSupprimer.parentNode.removeChild(articleSupprimer);
+      }
+      if(canapes == null || canapes.length == 0) {
+        messagePanierVide();
+      }
+      else {
+        calculTotalQuantite();
+        calculTotalPrix();
+      }
+    })
+  }
