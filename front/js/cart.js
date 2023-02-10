@@ -143,7 +143,7 @@ let boutonsSupprimer = [];
   
 calculTotalQuantite();
 calculTotalPrix();
-supprimerCanape();
+
 function calculTotalQuantite() {
   let totalQuantite = 0;
   for (let i=0; i<canapes.length;i++) {
@@ -234,3 +234,84 @@ function supprimerCanape(boutonSupprimer) {
     }
     )
   }
+verificationPrenom();
+verificationNom();
+verificationAdresse();
+verificationVille();
+verificationEmail();
+
+function verificationPrenom() {
+  let prenomRegex = /^[a-zA-ZéèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
+  let prenomInput = document.getElementById("firstName");
+  let prenomErreur = document.getElementById("firstNameErrorMsg");
+  prenomInput.addEventListener("change", (e)=> {
+    prenom= e.target.value
+    if (prenomRegex.test(prenom) == true) {
+      prenomErreur.innerText = "";
+    }  
+    else {
+      prenomErreur.innerText = "Utilisez seulement des Lettres !";
+    }
+})
+}
+
+function verificationNom() {
+  let nomRegex = /^[a-zA-ZéèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
+  let nomInput = document.getElementById("lastName");
+  let nomErreur = document.getElementById("lastNameErrorMsg");
+
+  nomInput.addEventListener("change",(e)=> {
+    nom = e.target.value;
+    if (nomRegex.test(nom) == true) {
+      nomErreur.innerText = "";
+    }
+    else {
+      nomErreur.innerText = "Utilisez seulement des Lettres!";
+    }
+  })
+}
+function verificationAdresse() {
+  let adresseRegex = /^[a-zA-Z0-9éèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
+  let adresseInput = document.getElementById("address");
+  let adresseErreur = document.getElementById("addressErrorMsg");
+
+  adresseInput.addEventListener("change", (e)=> {
+    adresse = e.target.value;
+    if (adresseRegex.test(adresse) == true) {
+      adresseErreur.innerText = "";
+    }
+    else {
+      adresseErreur.innerText = "Utilisez seulement des Chiffres et des Lettres"
+    }
+  })
+}
+function verificationVille() {
+  let villeRegex = /^[a-zA-ZéèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
+  let villeInput = document.getElementById("city");
+  let villeErreur = document.getElementById("cityErrorMsg");
+
+  villeInput.addEventListener("change", (e)=> {
+    ville = e.target.value;
+    if (villeRegex.test(ville) == true) {
+      villeErreur.innerText = "";
+    }
+    else {
+      villeErreur.innerText = "Utilisez seulement des Lettres"
+    }
+  })
+}
+function verificationEmail() {
+  let emailRegex = /^[/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  let emailInput = document.getElementById("email");
+  let emailErreur = document.getElementById("emailErrorMsg");
+
+  emailInput.addEventListener("change", (e)=> {
+    email = e.target.value;
+    if (emailRegex.test(email) == true) {
+      emailErreur.innerText = "";
+    }
+    else {
+      emailErreur.innerText = "Entrez une Adresse Email valide!"
+    }
+  })
+}
