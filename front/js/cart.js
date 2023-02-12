@@ -12,16 +12,7 @@ const boutonCommander = document.getElementById("order");
 
 let boutonsSupprimer = [];
 //Balise constamment en jeu
- 
-  if (canapes == null || canapes.length == 0) {
-    messagePanierVide();
 
-    boutonCommander.addEventListener("click", (event)=>{
-      alert("Votre panier est vide !");
-      event.preventDefault();
-    });
-  }
-  else {
     fetch('http://localhost:3000/api/products/')
     .then(function(reponse) {
       if (reponse.ok) {
@@ -125,6 +116,14 @@ let boutonsSupprimer = [];
           boutonSupprimer.appendChild(contenu_7);
 
           supprimerCanape(boutonSupprimer);
+
+          verificationPrenom();
+          verificationNom();
+          verificationAdresse();
+          verificationVille();
+          verificationEmail();
+
+          commanderCanape(i);
           }
         }
       
@@ -132,8 +131,8 @@ let boutonsSupprimer = [];
     .catch(function(erreur) {
   // Une erreur est survenue
     });
-  }
-  
+    
+
   function messagePanierVide() {
     let panier = "Le panier est vide!";
     let titre = document.createElement("h2");
@@ -191,7 +190,10 @@ function supprimerCanape(boutonSupprimer) {
         articleSupprimer.parentNode.removeChild(articleSupprimer);
       }
       if(canapes == null || canapes.length == 0) {
+        window.localStorage.clear("produitCanapes");
         messagePanierVide();
+        calculTotalQuantite();
+        calculTotalPrix();
       }
       else {
         calculTotalQuantite();
@@ -234,12 +236,6 @@ function supprimerCanape(boutonSupprimer) {
     }
     )
   }
-verificationPrenom();
-verificationNom();
-verificationAdresse();
-verificationVille();
-verificationEmail();
-
 function verificationPrenom() {
   let prenomRegex = /^[a-zA-ZéèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
   let prenomInput = document.getElementById("firstName");
@@ -248,13 +244,14 @@ function verificationPrenom() {
     prenom= e.target.value
     if (prenomRegex.test(prenom) == true) {
       prenomErreur.innerText = "";
+      boutonCommander.style.display ="block";
     }  
     else {
       prenomErreur.innerText = "Utilisez seulement des Lettres !";
+      boutonCommander.style.display ="none";
     }
 })
 }
-
 function verificationNom() {
   let nomRegex = /^[a-zA-ZéèêëàâäôöîïùûüçÉÈÊËÀÂÄÔÖÎÏÙÛÜÇ\s-]+$/;
   let nomInput = document.getElementById("lastName");
@@ -264,9 +261,11 @@ function verificationNom() {
     nom = e.target.value;
     if (nomRegex.test(nom) == true) {
       nomErreur.innerText = "";
+      boutonCommander.style.display ="block";
     }
     else {
       nomErreur.innerText = "Utilisez seulement des Lettres!";
+      boutonCommander.style.display ="none";
     }
   })
 }
@@ -279,9 +278,11 @@ function verificationAdresse() {
     adresse = e.target.value;
     if (adresseRegex.test(adresse) == true) {
       adresseErreur.innerText = "";
+      boutonCommander.style.display ="block";
     }
     else {
       adresseErreur.innerText = "Utilisez seulement des Chiffres et des Lettres"
+      boutonCommander.style.display ="none";
     }
   })
 }
@@ -294,9 +295,11 @@ function verificationVille() {
     ville = e.target.value;
     if (villeRegex.test(ville) == true) {
       villeErreur.innerText = "";
+      boutonCommander.style.display ="block";
     }
     else {
       villeErreur.innerText = "Utilisez seulement des Lettres"
+      boutonCommander.style.display ="none";
     }
   })
 }
@@ -309,9 +312,88 @@ function verificationEmail() {
     email = e.target.value;
     if (emailRegex.test(email) == true) {
       emailErreur.innerText = "";
+      boutonCommander.style.display ="block";
     }
     else {
       emailErreur.innerText = "Entrez une Adresse Email valide!"
+      boutonCommander.style.display ="none";      
     }
   })
+}
+function commanderCanape(i) {
+  boutonCommander.addEventListener('click', function(event) {
+  if ((canapes == null)||(canapes.length == 0)) {
+    alert("Le panier est vide!")
+    event.preventDefault();
+  }
+  else {
+    preparationPost();
+  }
+}
+  )
+}
+function preparationPost() {
+    let prenomInput = document.getElementById("firstName");
+    let nomInput = document.getElementById("lastName");
+    let adresseInput = document.getElementById("address");
+    let villeInput = document.getElementById("city");
+    let emailInput = document.getElementById("email");
+
+    let idsCommande = [];
+    for (i=0; i < canapes.length; i++) {
+    let idCommande = canapes[i].idProduit;
+    idsCommande.push(idCommande);
+    }
+    console.log(idsCommande)
+
+    let infoCommande={
+      contact: {
+        prenom:prenomInput.value,
+        nom:nomInput.value,
+        adresse:adresseInput.value,
+        ville:villeInput.value,
+        email:emailInput.value,
+      },
+        produits: {
+          ids:idsCommande,
+        }
+    }
+    console.log(infoCommande)
+    
+    alert("c'est partie")
+    requetePost();
+}
+
+function requetePost() {
+  let order = {
+    contact,
+    produits
+  };
+  console.log(order)
+  alert("order");
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Accept": "application.json",
+      "Content-Type": "application/json;charset=utf-8"
+    },
+    body:JSON.stringify(order)
+  })
+  .then((reponse) => {
+    if (reponse.status == 200) {
+      return reponse.json();
+    }
+    else {
+      alert("La validation de l'achat a échoué. Veuillez réessayer.");
+      console.error("Echec de la requête POST, status:" + reponse.status);
+    }
+  })
+  .then((data) =>
+  {
+    finalisation(data.orderId);
+  })
+}
+function finalisation(orderId) {
+  localStorage.clear("produitsCanape");
+  document.location.href = `confirmation.html?id=${orderId}`;
 }
