@@ -376,6 +376,7 @@ function requetePost(order) {
       console.log(reponse)
   })
   .then(function(valeur){
+    window.location.href=`./confirmation.html?orderId=${valeur}`;
     console.log(valeur)
     })
 }
