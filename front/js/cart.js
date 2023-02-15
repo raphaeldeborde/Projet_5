@@ -122,8 +122,6 @@ let boutonsSupprimer = [];
           verificationAdresse();
           verificationVille();
           verificationEmail();
-
-          commanderCanape(i);
           }
         }
       
@@ -131,7 +129,7 @@ let boutonsSupprimer = [];
     .catch(function(erreur) {
   // Une erreur est survenue
     });
-    
+  commanderCanape();  
 
   function messagePanierVide() {
     let panier = "Le panier est vide!";
@@ -144,13 +142,13 @@ calculTotalQuantite();
 calculTotalPrix();
 
 function calculTotalQuantite() {
-  let totalQuantite = 0;
-  for (let i=0; i<canapes.length;i++) {
-    let quantiteCanape=canapes[i].quantiteProduit;
-    totalQuantite = Number(totalQuantite) + Number(quantiteCanape);
-  }
-  document.getElementById("totalQuantity").innerText = totalQuantite;
-}
+    let totalQuantite = 0;
+    for (let i=0; i<canapes.length;i++) {
+      let quantiteCanape=canapes[i].quantiteProduit;
+      totalQuantite = Number(totalQuantite) + Number(quantiteCanape);
+    }
+    document.getElementById("totalQuantity").innerText = totalQuantite;
+ }
 function calculTotalPrix() {
   let totalPrix = 0;
   fetch('http://localhost:3000/api/products/')
@@ -320,11 +318,11 @@ function verificationEmail() {
     }
   })
 }
-function commanderCanape(i) {
+function commanderCanape() {
   boutonCommander.addEventListener('click', function(event) {
+  event.preventDefault();  
   if ((canapes == null)||(canapes.length == 0)) {
     alert("Le panier est vide!")
-    event.preventDefault();
   }
   else {
     preparationPost();
@@ -338,62 +336,46 @@ function preparationPost() {
     let adresseInput = document.getElementById("address");
     let villeInput = document.getElementById("city");
     let emailInput = document.getElementById("email");
-
-    let idsCommande = [];
+    if (prenomInput==""||nomInput==""||adresseInput==""|villeInput==""||emailInput=="") {
+      alert("Le formulaire doit être rempli pour passer commande!")
+    }
+    else {
+    let products = [];
     for (i=0; i < canapes.length; i++) {
     let idCommande = canapes[i].idProduit;
-    idsCommande.push(idCommande);
+    products.push(idCommande);
     }
-    console.log(idsCommande)
-
-    let infoCommande={
-      contact: {
-        prenom:prenomInput.value,
-        nom:nomInput.value,
-        adresse:adresseInput.value,
-        ville:villeInput.value,
-        email:emailInput.value,
-      },
-        produits: {
-          ids:idsCommande,
-        }
-    }
-    console.log(infoCommande)
+    console.log(products)
     
-    alert("c'est partie")
-    requetePost();
+    let contact={
+        firstName:prenomInput.value,
+        lastName:nomInput.value,
+        address:adresseInput.value,
+        city:villeInput.value,
+        email:emailInput.value,
+    };
+    let order = {
+      contact,
+      products,
+    }
+    console.log(order)
+    requetePost(order);
+    }
 }
 
-function requetePost() {
-  let order = {
-    contact,
-    produits
-  };
-  console.log(order)
-  alert("order");
+function requetePost(order) {
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
-      "Accept": "application.json",
-      "Content-Type": "application/json;charset=utf-8"
+      "Content-Type": "application/json;chartset=utf-8",
     },
-    body:JSON.stringify(order)
+    body:JSON.stringify(order),
   })
-  .then((reponse) => {
-    if (reponse.status == 200) {
-      return reponse.json();
-    }
-    else {
-      alert("La validation de l'achat a échoué. Veuillez réessayer.");
-      console.error("Echec de la requête POST, status:" + reponse.status);
-    }
+  .then(function(reponse) {
+      reponse.json();
+      console.log(reponse)
   })
-  .then((data) =>
-  {
-    finalisation(data.orderId);
-  })
-}
-function finalisation(orderId) {
-  localStorage.clear("produitsCanape");
-  document.location.href = `confirmation.html?id=${orderId}`;
+  .then(function(valeur){
+    console.log(valeur)
+    })
 }
