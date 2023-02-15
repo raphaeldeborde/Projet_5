@@ -371,12 +371,13 @@ function requetePost(order) {
     },
     body:JSON.stringify(order),
   })
-  .then(function(reponse) {
-      reponse.json();
-      console.log(reponse)
-  })
-  .then(function(valeur){
-    window.location.href=`./confirmation.html?orderId=${valeur}`;
+  .then(async(reponse) => {
+    try {
+      const contenu = await reponse.json();
+      window.location.href=`./confirmation.html?orderId=${contenu.orderId}`;
     console.log(valeur)
-    })
+    } catch(e) {
+
+    }
+});
 }
