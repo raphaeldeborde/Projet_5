@@ -49,9 +49,9 @@ function recupererProduit(addressePage) {
 
       }
     )
-    .catch(function(erreur) {
-      // Une erreur est survenue
-    });
+    .catch(function(err){
+// Une erreur est survenue;
+    }) 
   }
 
   
@@ -111,20 +111,20 @@ function insererAuPanier(canapes) {
   let inputQuantite = document.getElementById("quantity");
   let quantite = inputQuantite.value;
   let couleurChoisie = selectionCouleur.value;
-  let name = document.querySelector("#title");
+  let name = document.getElementById("title");
   let imageUrl = document.querySelector("article .item__img img").src;
-  let description = document.querySelector("#description");
+  let description = document.getElementById("description");
   let altTxt = document.querySelector("article .item__img img").alt
   let unCanape = idCanape + couleurChoisie;
   let produitCanape = {
-    canapePrecis:unCanape,
     idProduit:idCanape,
     nomProduit:name,
     couleurProduit:couleurChoisie,
     quantiteProduit:quantite,
     imageProduit:imageUrl,
     descriptionProduit:description,
-    alt:altTxt,
+    altProduit:altTxt,
+    canapePrecis:unCanape,
   };
   
   if (canapes==null) {
@@ -145,7 +145,7 @@ function insererAuPanier(canapes) {
         quantiteProduit:nouvelleQuantite,
         imageProduit:imageUrl,
         descriptionProduit:description,
-        alt:altTxt,
+        altProduit:altTxt,
       }
       canapes.splice(indice, 1,memeProduit);
       window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
@@ -173,16 +173,4 @@ function appliquerUnStyle(element1, couleur1, taille1, element2, couleur2, taill
     element1.style.borderWidth = `${taille1}px`;
     element2.style.borderColor = couleur2;
     element2.style.borderWidth = `${taille2}px`;
-}
-
-// personnalisation du message erreur à afficher
-function erreur() {
-  const section = document.querySelector(".item");
-  const article = document.querySelector("article");
-  section.removeChild(article);
-  const newPMessage = document.createElement("p");
-  newPMessage.innerHTML = "Oups !<br>Il semble y avoir une erreur...";
-  newPMessage.style.textAlign = "center";
-  newPMessage.style.color = "black";
-  section.appendChild(newPMessage);
 }

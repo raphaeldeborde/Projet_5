@@ -7,12 +7,13 @@ let canapes = JSON.parse(window.localStorage.getItem("produitCanapes"));
 //Déclaration de la balise contenant les canapés
 let parentArticle = document.getElementById("cart__items")
 
-//Déclaration des variables pour commander
+//Déclaration de variable pour commander
 const boutonCommander = document.getElementById("order");
 
 let boutonsSupprimer = [];
 //Balise constamment en jeu
 
+//Appel de l'api pour obtenir les informations de chaque canape
     fetch('http://localhost:3000/api/products/')
     .then(function(reponse) {
       if (reponse.ok) {
@@ -21,14 +22,16 @@ let boutonsSupprimer = [];
     })
     .then(data => {
       for (let i=0; i < canapes.length; i++) {
-        
+        //récupération par le localStorage de l'id, de la couleur, quantite image et alt
           let id = canapes[i].idProduit;
           let couleur = canapes[i].couleurProduit;
           let quantite = canapes[i].quantiteProduit;
           let imageSrc = canapes[i].imageProduit;
           let imageAlt = canapes[i].altProduit;
                     
+          //recoupement de l'id obtenu du localStorage avec celle de l'api
           const indice2 = data.findIndex((element) => element._id == id);
+          // extraction du nom et du prix par l'api d'après l'id du canape dans le localStorage
           let nom = data[indice2].name;
           let prix = data[indice2].price;
           
@@ -117,6 +120,7 @@ let boutonsSupprimer = [];
 
           supprimerCanape(boutonSupprimer);
 
+          //vérification du formulaire
           verificationPrenom();
           verificationNom();
           verificationAdresse();
@@ -201,16 +205,12 @@ function supprimerCanape(boutonSupprimer) {
   }
   function modifierCanape(nombreProduit) {
     nombreProduit.addEventListener("change",()=> {
+      //closest permet de remonter à l'article correspondant
       let articleModifier = nombreProduit.closest("article");
-      console.log(articleModifier)
       let idModifier = articleModifier.dataset.id;
-      console.log(idModifier)
       let couleurModifier = articleModifier.dataset.color;
-      console.log(couleurModifier)
       const indice4 = canapes.findIndex(element =>((element.idProduit === idModifier) && (element.couleurProduit === couleurModifier)));
-      console.log(indice4)
       let nouvelleQuantite= nombreProduit.value;
-      console.log(nouvelleQuantite)
       let imageUrl = canapes[indice4].imageProduit;
       let nom = canapes[indice4].nomProduit;
       let alt = canapes[indice4].altProduit;
@@ -224,9 +224,7 @@ function supprimerCanape(boutonSupprimer) {
         descriptionProduit:description,
         altProduit:alt,
       }
-      console.log(memeProduit)
       canapes.splice([indice4], 1, memeProduit);
-      console.log(canapes)
       window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
       alert("La quantité de ce type de Canapé a changé");
       calculTotalQuantite();
@@ -318,6 +316,7 @@ function verificationEmail() {
     }
   })
 }
+//déclaration de la fonction de commande des canapés du panier
 function commanderCanape() {
   boutonCommander.addEventListener('click', function(event) {
   event.preventDefault();  
@@ -330,6 +329,7 @@ function commanderCanape() {
 }
   )
 }
+//déclaration de l'objet contact et du tableau des id des produits
 function preparationPost() {
     let prenomInput = document.getElementById("firstName");
     let nomInput = document.getElementById("lastName");
@@ -358,11 +358,10 @@ function preparationPost() {
       contact,
       products,
     }
-    console.log(order)
     requetePost(order);
     }
 }
-
+//déclaration de la requête POST
 function requetePost(order) {
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
