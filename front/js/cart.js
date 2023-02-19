@@ -224,9 +224,14 @@ function supprimerCanape(boutonSupprimer) {
         descriptionProduit:description,
         altProduit:alt,
       }
-      canapes.splice([indice4], 1, memeProduit);
-      window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
-      alert("La quantité de ce type de Canapé a changé");
+      if (nouvelleQuantite > 100 || nouvelleQuantite < 0) {
+        alert("La quantité doit être comprise entre 1 et 100. Modifier à nouveau la quantité.");
+      }
+      else {
+        canapes.splice([indice4], 1, memeProduit);
+        window.localStorage.setItem("produitCanapes", JSON.stringify(canapes));
+        alert("La quantité de ce type de Canapé a changé");
+      }
       calculTotalQuantite();
       calculTotalPrix();
     }
@@ -324,20 +329,21 @@ function commanderCanape() {
     alert("Le panier est vide!")
   }
   else {
-    preparationPost();
+    preparationPost(event);
   }
 }
   )
 }
 //déclaration de l'objet contact et du tableau des id des produits
-function preparationPost() {
+function preparationPost(event) {
     let prenomInput = document.getElementById("firstName");
     let nomInput = document.getElementById("lastName");
     let adresseInput = document.getElementById("address");
     let villeInput = document.getElementById("city");
     let emailInput = document.getElementById("email");
-    if (prenomInput==""||nomInput==""||adresseInput==""|villeInput==""||emailInput=="") {
+    if (prenomInput.value==""||nomInput.value==""||adresseInput.value==""|villeInput.value==""||emailInput.value=="") {
       alert("Le formulaire doit être rempli pour passer commande!")
+      event.preventDefault();
     }
     else {
     let products = [];
@@ -374,7 +380,7 @@ function requetePost(order) {
     try {
       const contenu = await reponse.json();
       window.location.href=`./confirmation.html?orderId=${contenu.orderId}`;
-    console.log(valeur)
+      window.localStorage.clear("produitCanapes");
     } catch(e) {
 
     }

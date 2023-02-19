@@ -115,7 +115,7 @@ function insererAuPanier(canapes) {
   let imageUrl = document.querySelector("article .item__img img").src;
   let description = document.getElementById("description");
   let altTxt = document.querySelector("article .item__img img").alt
-  let unCanape = idCanape + couleurChoisie;
+  
   let produitCanape = {
     idProduit:idCanape,
     nomProduit:name,
@@ -124,33 +124,37 @@ function insererAuPanier(canapes) {
     imageProduit:imageUrl,
     descriptionProduit:description,
     altProduit:altTxt,
-    canapePrecis:unCanape,
   };
   
-  if (canapes==null) {
+  if (canapes == null || canapes.length == 0) {
     canapes=[];
     canapes.push(produitCanape);
     window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
     alert("Le panier est ouvert");
   }
   else {
-    const indice = canapes.findIndex(can => can.canapePrecis == produitCanape.canapePrecis);
+    const indice = canapes.findIndex(can => can.idProduit == produitCanape.idProduit && can.couleurProduit == produitCanape.couleurProduit);
     if ((indice !== -1))  {
       let nouvelleQuantite = Number(canapes[indice].quantiteProduit) + Number(quantite);
-      
-      let memeProduit={
-        idProduit:idCanape,
-        nomProduit:name,
-        couleurProduit:couleurChoisie,
-        quantiteProduit:nouvelleQuantite,
-        imageProduit:imageUrl,
-        descriptionProduit:description,
-        altProduit:altTxt,
+      if (nouvelleQuantite < 101 && nouvelleQuantite > 1) {
+        let memeProduit={
+          idProduit:idCanape,
+          nomProduit:name,
+          couleurProduit:couleurChoisie,
+          quantiteProduit:nouvelleQuantite,
+          imageProduit:imageUrl,
+          descriptionProduit:description,
+          altProduit:altTxt,
+        }
+        canapes.splice(indice, 1,memeProduit);
+        window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
+        alert("Le nombre de canapé souhaité a été augmenté");
       }
-      canapes.splice(indice, 1,memeProduit);
-      window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
-      alert("Le nombre de canapé souhaité a été augmenté");
+      else {
+        alert("Le nombre de canapé ne peut être supérieur à 100 ou inférieur à 0 dans le panier.")
+      }
     }
+
     else {
       canapes.push(produitCanape);
       window.localStorage.setItem("produitCanapes",JSON.stringify(canapes));
